@@ -1,0 +1,68 @@
+import React, { useState } from 'react';
+import './App.css';
+
+const products = [
+  { id: 1, name: 'Ürün 1', price: 20, stock: 10, image: '' },
+  { id: 2, name: 'Ürün 2', price: 30, stock: 15, image: 'product2.jpg' },
+  { id: 3, name: 'Ürün 3', price: 40, stock: 5, image: 'product3.jpg' },
+  { id: 4, name: 'Ürün 4', price: 25, stock: 8, image: 'product4.jpg' },
+];
+
+function App() {
+  const [cart, setCart] = useState([]);
+  const [message, setMessage] = useState('');
+
+  const addToCart = (product) => {
+    if (product.stock > 0) {
+      setCart([...cart, product]);
+      product.stock -= 1;
+      setMessage('');
+    } else {
+      setMessage('Üzgünüz, ürün stokta kalmamıştır.');
+    }
+  };
+
+  const removeFromCart = (productId) => {
+    const updatedCart = cart.filter(item => {
+      if (item.id === productId) {
+        item.stock += 1;
+      }
+      return item.id !== productId;
+    });
+    setCart(updatedCart);
+    setMessage('');
+  };
+
+  const totalAmount = cart.reduce((total, item) => total + item.price, 0);
+
+  return (
+    <div className="App">
+      <h1>Alışveriş Sepeti</h1>
+      <div className="product-list">
+        {products.map(product => (
+          <div key={product.id} className="product">
+            <img src={`images/${product.image}`} alt={product.name} />
+            <h3>{product.name}</h3>
+            <p>Fiyat: ${product.price}</p>
+            <p>Stok: {product.stock}</p>
+            <button onClick={() => addToCart(product)}>Sepete Ekle</button>
+          </div>
+        ))}
+      </div>
+      <div className="cart">
+        <h2>Sepet</h2>
+        {cart.length === 0 ? <p>Sepetiniz boş.</p> : null}
+        {cart.map(item => (
+          <div key={item.id} className="cart-item">
+            <p>{item.name} - ${item.price}</p>
+            <button onClick={() => removeFromCart(item.id)}>Sepetten Çıkar</button>
+          </div>
+        ))}
+        {message && <p className="message">{message}</p>}
+        {cart.length > 0 && <p>Toplam: ${totalAmount}</p>}
+      </div>
+    </div>
+  );
+}
+
+export default App;
